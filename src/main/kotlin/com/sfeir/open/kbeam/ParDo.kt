@@ -1,10 +1,28 @@
+/*
+ *    Copyright 2018 SFEIR S.A.S.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.sfeir.open.kbeam
 
 import org.apache.beam.sdk.options.PipelineOptions
 import org.apache.beam.sdk.transforms.DoFn
 import org.apache.beam.sdk.transforms.ParDo
 import org.apache.beam.sdk.transforms.windowing.PaneInfo
-import org.apache.beam.sdk.values.*
+import org.apache.beam.sdk.values.PCollection
+import org.apache.beam.sdk.values.PCollectionView
+import org.apache.beam.sdk.values.TupleTag
 import org.joda.time.Instant
 
 /**
@@ -130,7 +148,7 @@ inline fun <InputType, OutputType> PCollection<InputType>.map(name: String = "ma
  */
 inline fun <InputType, OutputType> PCollection<InputType>.flatMap(name: String = "flatMap", crossinline function: (InputType) -> Iterable<OutputType>): PCollection<OutputType> {
     return this.parDo(name) {
-        val l = function(element);
+        val l = function(element)
         l.forEach {
             output(it)
         }

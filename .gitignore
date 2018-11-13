@@ -25,6 +25,9 @@ hs_err_pid*
 #Idea folder
 .idea
 
+# gradle cache folder
+.gradle
+
 #output folders
 build
 out

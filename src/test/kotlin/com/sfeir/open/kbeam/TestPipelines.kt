@@ -1,14 +1,27 @@
+/*
+ *    Copyright 2018 SFEIR S.A.S.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.sfeir.open.kbeam
 
-import org.apache.avro.data.Json
-import org.apache.avro.util.internal.JacksonUtils
 import org.apache.beam.sdk.Pipeline
 import org.apache.beam.sdk.coders.AvroCoder
 import org.apache.beam.sdk.coders.DefaultCoder
 import org.apache.beam.sdk.io.TextIO
 import org.apache.beam.sdk.options.Default
 import org.apache.beam.sdk.options.Description
-import org.junit.jupiter.api.Test
 import org.apache.beam.sdk.options.PipelineOptions
 import org.apache.beam.sdk.options.PipelineOptionsFactory
 import org.apache.beam.sdk.transforms.Create
@@ -17,14 +30,15 @@ import org.apache.beam.sdk.transforms.ParDo
 import org.apache.beam.sdk.transforms.View
 import org.apache.beam.sdk.values.KV
 import org.codehaus.jackson.map.ObjectMapper
+import org.junit.jupiter.api.Test
 
 
 interface MyOptions : PipelineOptions {
     @Description("Custom Option")
     @Default.String("test")
-    fun getTest(): String;
+    fun getTest(): String
 
-    fun setTest(value: String): Unit
+    fun setTest(value: String)
 }
 
 class TestStandardPipeline {
@@ -43,6 +57,7 @@ class TestStandardPipeline {
         val options = PipelineOptionsFactory.fromArgs("--test=toto").withValidation().`as`(MyOptions::class.java)
         val pipeline = Pipeline.create(options)
         println("$pipeline, $options")
+
         val lines = pipeline.apply("Read Lines", TextIO.read().from("src/test/resources/test.csv"))
 
         val entries = lines.apply("Map to entries", ParDo.of(object : DoFn<String, Entry>() {
