@@ -1,23 +1,26 @@
-# kbeam
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+package com.sfeir.open.kbeam;
 
-KBeam is a library to help write Apache Beam pipelines with less ceremony and verbosity compared to Java while keeping or improving the strong typing guarentees absent from python pipeline builders.
+import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.MapElements;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.View;
+import org.apache.beam.sdk.values.*;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.jupiter.api.Test;
 
-Comparable to [Euphoria](https://beam.apache.org/roadmap/euphoria/) but for Kotlin
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
+class SamplePipeline implements Serializable {
+    private static ThreadLocal<ObjectMapper> json = ThreadLocal.withInitial(ObjectMapper::new);
 
-## Features Overview
-
-* Fully idiomatic Trivial map/flatMap/filter   
-* Multiple output helpers for common cases
-* Codecs for Kotlin data classes, common tuples (Pair,Triple)
-* IO DSL
-
-## Quick example
-
-The following pipeline in Java:
-([Full example](https://github.com/pujo-j/kbeam/blob/master/src/test/java/com/sfeir/open/kbeam/SamplePipeline.java)) 
-```java
+    @Test
+    void runTest() {
         PipelineOptionsFactory.register(MyOptions.class);
         MyOptions options = PipelineOptionsFactory.fromArgs("--test=toto").withValidation().as(MyOptions.class);
 
@@ -96,75 +99,5 @@ The following pipeline in Java:
 
         pipeline.run(options).waitUntilFinish();
 
-```
-
-Converted to KBeam:
-([Full example](https://github.com/pujo-j/kbeam/blob/master/src/test/kotlin/com/sfeir/open/kbeam/SamplePipelineKotlin.kt))
-```kotlin
-        val (pipeline, options) = PipeBuilder.create<KMyOptions>(arrayOf("--test=toto"))
-        println("$pipeline, $options")
-
-        val countryCodes = pipeline
-                .readTextFile(name = "Read Country File", path = "src/test/resources/country_codes.jsonl")
-                .map {
-                    val line = Json.mapper.readTree(it)
-                    KV.of(line["Code"].textValue, line["Name"].textValue)
-                }.toMap()
-
-        val test = pipeline.readTextFile(name = "Read Lines", path = "src/test/resources/test.csv")
-                .filter { it.isNotEmpty() }
-                .map(name = "Map to entries") {
-                    val words = it.split(",")
-                    KEntry(words[0], words[1], words[2].toDouble())
-                }.parDo<KEntry, KEntry>(
-                        name = "Join with countries",
-                        sideInputs = listOf(countryCodes)) {
-                    val countryName = sideInputs[countryCodes][element.countryCode] ?: "unknown"
-                    output(element.copy(countryName = countryName))
-                }
-
-        val (positives, negatives) = test.split {
-            println(it)
-            it.doubleValue >= 0
-        }
-
-        positives.parDo<KEntry, Void> {
-            println("Positive: $element")
-        }
-
-
-        negatives.parDo<KEntry, Void> {
-            println("Negative: $element")
-        }
-
-        pipeline.run().waitUntilFinish()
-```
-## Table of contents
-* [Features Overview](#features-overview)
-* [Quick example](#quick-example)
-* [Current status](#current-project-status)
-
-## Setup
-
-*TODO*: 
-* Create and deploy maven artefact to central
-* Create a mvn template project and gradle template
-
-## Current Project Status
-
-- [x] Type safe custom configuration pipeline creation
-- [x] Basic lambda map/filter/flatMap
-- [x] Generic ParDo with Side Inputs
-- [x] Multiple assignment output with TupleTag hiding for dual and triple outputs in ParDo
-- [x] Simple filter based dual output splitter
-- [ ] Multiple assignment output with TupleTag hiding for 4 to 8 outputs in ParDo
-- [ ] Partition helpers for 3 to 8 outputs
-- [ ] CoGroupByKey multiple assignment output with TupleTag hiding
-- [ ] Codec builders with kotlinx.serialization 
-- [ ] TextIO DSL helpers
-- [ ] Kafka DSL helpers
-- [ ] Pub/Sub DSL helpers
-- [ ] ElasticSearch DSL helpers
-- [ ] BigQuery DSL helpers
-- [ ] BigTable DSL helpers
-- [ ] MongoDb DSL helpers
+    }
+}
