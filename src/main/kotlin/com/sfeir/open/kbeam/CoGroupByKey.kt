@@ -17,25 +17,26 @@
 
 package com.sfeir.open.kbeam
 
-import org.apache.beam.sdk.coders.AvroCoder
-import org.apache.beam.sdk.coders.DefaultCoder
-import org.apache.beam.sdk.transforms.join.CoGbkResult
+import org.apache.beam.sdk.Pipeline
+import org.apache.beam.sdk.transforms.join.CoGroupByKey
+import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple
+import org.apache.beam.sdk.values.KV
+import org.apache.beam.sdk.values.PCollection
 import org.apache.beam.sdk.values.TupleTag
 
-@DefaultCoder(AvroCoder::class)
-class CoGroupResults<LeftType, RightType>(private val delegate: CoGbkResult, val leftTag: TupleTag<LeftType>, val rightTag: TupleTag<RightType>) {
-    val left: Iterable<LeftType> get() = delegate.getAll(leftTag)
-    val right: Iterable<RightType> get() = delegate.getAll(rightTag)
 
-}
-/*
-inline fun <reified KeyType, reified LeftType, reified RightType> Pipeline.coGroupByKey(
+@Suppress("unused")
+inline fun <reified KeyType, reified LeftType, reified RightType, reified OutputType> Pipeline.coGroupByKey(
         left: PCollection<KV<KeyType, LeftType>>,
-        right: PCollection<KV<KeyType, RightType>>)
-        : PCollection<KV<KeyType, CoGroupResults<LeftType, RightType>>> {
+        right: PCollection<KV<KeyType, RightType>>, crossinline function: (key: KeyType, left: Iterable<LeftType>, right: Iterable<RightType>) -> List<OutputType>)
+        : PCollection<OutputType> {
     val leftTag = object : TupleTag<LeftType>() {}
     val rightTag = object : TupleTag<RightType>() {}
     val keyedPCollectionTuple = KeyedPCollectionTuple.of(leftTag, left).and(rightTag, right)
-    return keyedPCollectionTuple.apply(org.apache.beam.sdk.transforms.join.CoGroupByKey.create()).map { KV.of(it.key, CoGroupResults(it.value, leftTag, rightTag)) }
+    return keyedPCollectionTuple.apply(CoGroupByKey.create()).parDo {
+        val k = element.key
+        if (k != null) {
+            function(k, element.value.getAll(leftTag), element.value.getAll(rightTag)).forEach { output(it) }
+        }
+    }
 }
-*/
