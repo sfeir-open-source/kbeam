@@ -156,7 +156,7 @@ inline fun <InputType, OutputType> PCollection<InputType>.flatMap(name: String =
     }
 }
 
-inline fun <reified InputType> PCollection<InputType>.split(name: String = "split", crossinline function: (InputType) -> Boolean): Pair<PCollection<InputType>, PCollection<InputType>> {
+inline fun <reified InputType> PCollection<InputType>.split(name: String = "split", crossinline function: (InputType) -> Boolean): DoFn2Outputs<InputType, InputType> {
     return this.parDo2(name) {
         if (function(element)) {
             output(element)

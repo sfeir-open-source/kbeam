@@ -157,10 +157,11 @@ Converted to KBeam:
 - [x] Generic ParDo with Side Inputs
 - [x] Multiple assignment output with TupleTag hiding for dual and triple outputs in ParDo
 - [x] Simple filter based dual output splitter
-- [ ] Multiple assignment output with TupleTag hiding for 4 to 8 outputs in ParDo
+- [x] Multiple assignment output with TupleTag hiding for 4 to 8 outputs in ParDo
 - [ ] Partition helpers for 3 to 8 outputs
-- [ ] CoGroupByKey multiple assignment output with TupleTag hiding
+- [x] CoGroupByKey multiple assignment output with TupleTag hiding
 - [ ] Codec builders with kotlinx.serialization 
+- [ ] Codec builders with kryo
 - [ ] TextIO DSL helpers
 - [ ] Kafka DSL helpers
 - [ ] Pub/Sub DSL helpers
