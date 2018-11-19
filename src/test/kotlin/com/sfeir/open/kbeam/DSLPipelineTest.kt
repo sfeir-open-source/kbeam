@@ -41,7 +41,7 @@ data class KEntry(
         val countryName: String = "unknown")
 
 
-class TestDSLPipeline {
+class DSLPipelineTest {
 
     data class CountryCodeEntry(val Code: String, val Name: String)
 
