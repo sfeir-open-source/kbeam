@@ -32,13 +32,21 @@
  *
  */
 import com.sfeir.open.kbeam.generator.ParDosGenerator
+import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
+
+
+val junit_version = "5.3.1"
+val beam_version = "2.8.0"
+val kryo_version = "4.0.2"
 
 plugins {
-    kotlin("jvm") version "1.3.0"
+    kotlin("jvm") version "1.3.10"
     `maven-publish`
     id("org.jetbrains.dokka") version "0.9.16"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.3.0"
 }
+
+val kotlin_version = project.getKotlinPluginVersion()
+
 
 version = System.getenv().getOrDefault("KBEAM_VERSION", "SNAPSHOT")
 group = "com.sfeir.open"
@@ -73,10 +81,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all 
     }
 }
 
-allOpen {
-    annotation("org.apache.beam.sdk.coders.DefaultCoder")
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
@@ -105,15 +109,12 @@ publishing {
 task("generateKotlinSource") {
     ParDosGenerator.getParDos(projectDir.absolutePath + "/src/main/generated")
 }
-
-val junit_version = "5.3.1"
-val beam_version = "2.8.0"
-val kryo_version = "5.0.0-RC1"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    compile(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlin_version)
     compile(group = "org.apache.beam", name = "beam-sdks-java-core", version = beam_version)
     compile(group = "com.esotericsoftware", name = "kryo", version = kryo_version)
-
+    compile(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.+")
     testCompile(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junit_version)
     testCompile(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junit_version)
     testRuntime(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junit_version)

@@ -17,6 +17,8 @@
 
 package com.sfeir.open.kbeam
 
+import com.sfeir.open.kbeam.io.writeText
+import org.apache.beam.sdk.io.Compression
 import org.apache.beam.sdk.options.PipelineOptions
 import org.apache.beam.sdk.transforms.Create
 import org.apache.beam.sdk.values.KV
@@ -43,6 +45,13 @@ class TestCoGroupByKey {
             println(element)
         }
 
+        group.writeText {
+            path = "test"
+            compression = Compression.GZIP
+            numShards = 1
+            header = "#Header"
+            footer = "#Footer"
+        }
         pipeline.run().waitUntilFinish()
     }
 }

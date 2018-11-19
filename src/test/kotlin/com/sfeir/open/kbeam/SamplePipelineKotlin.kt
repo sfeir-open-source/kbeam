@@ -17,13 +17,12 @@
 
 package com.sfeir.open.kbeam
 
-import org.apache.beam.sdk.coders.AvroCoder
-import org.apache.beam.sdk.coders.DefaultCoder
+import com.sfeir.open.kbeam.io.readJSONLFile
+import com.sfeir.open.kbeam.io.readTextFile
 import org.apache.beam.sdk.options.Default
 import org.apache.beam.sdk.options.Description
 import org.apache.beam.sdk.options.PipelineOptions
 import org.apache.beam.sdk.values.KV
-import org.codehaus.jackson.map.ObjectMapper
 import org.junit.jupiter.api.Test
 
 
@@ -35,7 +34,6 @@ interface KMyOptions : PipelineOptions {
     fun setTest(value: String)
 }
 
-@DefaultCoder(AvroCoder::class)
 data class KEntry(
         val name: String = "",
         val countryCode: String = "",
@@ -45,25 +43,17 @@ data class KEntry(
 
 class TestDSLPipeline {
 
-    object Json {
-        val mapper: ObjectMapper by lazy<ObjectMapper> {
-            ObjectMapper()
-        }
-    }
+    data class CountryCodeEntry(val Code: String, val Name: String)
 
     @Test
     fun runTest() {
         val (pipeline, options) = PipeBuilder.create<KMyOptions>(arrayOf("--test=toto"))
         println("$pipeline, $options")
 
-        val countryCodes = pipeline
-                .readTextFile(name = "Read Country File", path = "src/test/resources/country_codes.jsonl")
-                .map {
-                    val line = Json.mapper.readTree(it)
-                    KV.of(line["Code"].textValue, line["Name"].textValue)
-                }.toMap()
+        val countryCodes = pipeline.readJSONLFile<CountryCodeEntry> { filePattern = "src/test/resources/country_codes.jsonl" }
+                .map { KV.of(it.Code, it.Name) }.toMap()
 
-        val test = pipeline.readTextFile(name = "Read Lines", path = "src/test/resources/test.csv")
+        val test = pipeline.readTextFile(name = "Read Lines") { filePattern = "src/test/resources/test.csv" }
                 .filter { it.isNotEmpty() }
                 .map(name = "Map to entries") {
                     val words = it.split(",")

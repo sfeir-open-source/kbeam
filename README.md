@@ -5,6 +5,9 @@ KBeam is a library to help write Apache Beam pipelines with less ceremony and ve
 
 Comparable to [Euphoria](https://beam.apache.org/roadmap/euphoria/) but for Kotlin
 
+*Warning*
+
+Snapshot or pre 1.0 versions will have highly unstable APIs
 
 ## Features Overview
 
@@ -160,9 +163,8 @@ Converted to KBeam:
 - [x] Multiple assignment output with TupleTag hiding for 4 to 8 outputs in ParDo
 - [ ] Partition helpers for 3 to 8 outputs
 - [x] CoGroupByKey multiple assignment output with TupleTag hiding
-- [ ] Codec builders with kotlinx.serialization 
-- [ ] Codec builders with kryo
-- [ ] TextIO DSL helpers
+- [x] Default Kryo coding
+- [x TextIO DSL helpers
 - [ ] Kafka DSL helpers
 - [ ] Pub/Sub DSL helpers
 - [ ] ElasticSearch DSL helpers

@@ -17,9 +17,12 @@
 
 package com.sfeir.open.kbeam
 
+import com.sfeir.open.kbeam.coder.KryoCoderProvider
 import org.apache.beam.sdk.Pipeline
 import org.apache.beam.sdk.options.PipelineOptions
 import org.apache.beam.sdk.options.PipelineOptionsFactory
+import org.apache.beam.sdk.transforms.PTransform
+import org.apache.beam.sdk.values.PCollection
 
 /**
  * Utility methods for Pipelines
@@ -35,7 +38,19 @@ object PipeBuilder {
                 .withValidation()
                 .`as`(R::class.java)
         val res = Pair(Pipeline.create(options), options)
+        res.first.coderRegistry.registerCoderProvider(KryoCoderProvider())
         return res
     }
 
+}
+
+/**
+ * Create a composite PTransform from a chain of PTransforms
+ */
+fun <I, O> combine(combiner: (col: PCollection<I>) -> PCollection<O>): PTransform<PCollection<I>, PCollection<O>> {
+    return object : PTransform<PCollection<I>, PCollection<O>>() {
+        override fun expand(input: PCollection<I>): PCollection<O> {
+            return combiner(input)
+        }
+    }
 }
