@@ -150,7 +150,7 @@ Converted to KBeam:
 ## Setup
 
 *TODO*: 
-* Create and deploy maven artefact to central
+* Create and deploy maven artifact to central
 * Create a mvn template project and gradle template
 
 ## Current Project Status
@@ -161,13 +161,13 @@ Converted to KBeam:
 - [x] Multiple assignment output with TupleTag hiding for dual and triple outputs in ParDo
 - [x] Simple filter based dual output splitter
 - [x] Multiple assignment output with TupleTag hiding for 4 to 8 outputs in ParDo
-- [ ] Partition helpers for 3 to 8 outputs
 - [x] CoGroupByKey multiple assignment output with TupleTag hiding
 - [x] Default Kryo coding
-- [x TextIO DSL helpers
+- [x] TextIO DSL helpers
 - [ ] Kafka DSL helpers
 - [ ] Pub/Sub DSL helpers
 - [ ] ElasticSearch DSL helpers
 - [ ] BigQuery DSL helpers
 - [ ] BigTable DSL helpers
 - [ ] MongoDb DSL helpers
+- [ ] Partition helpers for 3 to 8 outputs (maybe)
