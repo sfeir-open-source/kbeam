@@ -1,1 +1,23 @@
+title: KBeam
+email: pujo.j@sfeir.com
+description: 'Idiomatic Kotlin Pipelines for Apache Beam'
+url: "https://sfeir-open-source.github.io/kbeam/" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  pujo-j
+
+# Build settings
+markdown: kramdown
 theme: jekyll-theme-slate
+plugins:
+  - jekyll-feed
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/

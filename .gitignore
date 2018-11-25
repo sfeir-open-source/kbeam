@@ -25,6 +25,8 @@ hs_err_pid*
 #Idea folder
 .idea
 
+*.iml
+
 # gradle cache folder
 .gradle
 
